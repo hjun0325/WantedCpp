@@ -2,7 +2,6 @@
 #include "Level.h"
 //#include "../Actor/Actor.h"
 #include "Actor/Actor.h"
-#include <iostream>
 
 Level::Level()
 	:actors(nullptr), capacity(4), count(0)

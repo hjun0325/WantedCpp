@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PreCompiledHeader.h"
+#include "Core.h"
 
 //입력 처리를 위한 구조체
 struct KeyState
@@ -42,7 +42,7 @@ protected:
 	void ProcessInput();			//입력 처리
 	void Update(float deltaTime);	//Tick();
 	void Draw();					//Render();
-
+	
 	//이전 값을 저장하는 함수
 	void SavePreviousKeyStates();
 
