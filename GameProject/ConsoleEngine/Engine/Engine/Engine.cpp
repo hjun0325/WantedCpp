@@ -2,20 +2,23 @@
 #include "Engine.h"
 #include "Level/Level.h"
 
-//스태틱 변수 초기화
+// 스태틱 변수 초기화.
 Engine* Engine::instance = nullptr;
 
 Engine::Engine()
 	: quit(false), mainLevel(nullptr)
 {
-	//객체가 만들어질 때 싱글톤 객체 생성
-	//싱글톤 객체 설정
+	// 객체가 만들어질 때 싱글톤 객체 생성.
+	// 싱글톤 객체 설정.
 	instance = this;
+
+	// 기본 타겟 프레임 속도 설정.
+	SetTargetFrameRate(60.0f);
 }
 
 Engine::~Engine()
 {
-	//메인 레벨 메모리 해제
+	// 메인 레벨 메모리 해제.
 	if (mainLevel != nullptr)
 	{
 		delete mainLevel;
@@ -24,14 +27,14 @@ Engine::~Engine()
 
 void Engine::Run()
 {
-	////시작 타임 스탬프 저장
-	////timeGetTime함수는 밀리 세컨드 단위(1/1000초) 단위
+	// 시작 타임 스탬프 저장.
+	// timeGetTime함수는 밀리 세컨드 단위(1/1000초) 단위.
 	//unsigned long currentTime = timeGetTime();
 	//unsigned long previousTime = 0;
 
-	//CPU시계 사용
-	//시스템 시계 ->고해상도 카운터 (10000000)
-	//메인보드에 시계가 있음
+	// CPU시계 사용.
+	// 시스템 시계 ->고해상도 카운터 (초당 10000000번).
+	// 메인보드에 시계가 있음.
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
 
@@ -45,10 +48,10 @@ void Engine::Run()
 	int64_t previousTime = 0;
 
 	//프레임 제한
-	float targetFrameRate = 60.0f;
+	//float targetFrameRate = 60.0f;
 
 	//한 프레임 시간 계산
-	float targetOneFrameTime = 1.0f / targetFrameRate;
+	//float targetOneFrameTime = 1.0f / targetFrameRate;
 
 	//Game-Loop
 	while (true)
@@ -67,6 +70,9 @@ void Engine::Run()
 		//프레임 시간 계산
 		float deltaTime = static_cast<float>((currentTime - previousTime) /
 			static_cast<float>(frequency.QuadPart));
+
+		// 한 프레임 시간 계산.
+		//float targetOneFrameTime = 1.0f / targetFrameRate;
 
 		//프레임 확인
 		if (deltaTime >= targetOneFrameTime)
@@ -100,6 +106,52 @@ void Engine::LoadLevel(Level* newLevel)
 
 	//메인 레벨 설정
 	mainLevel = newLevel;
+}
+
+void Engine::SetCursorType(CursorType cursorType)
+{
+	// 1. 커서 속성 구조체 설정.
+	CONSOLE_CURSOR_INFO info = { };
+
+	// 타입 별로 구조체 값 설정.
+	switch (cursorType)
+	{
+	case CursorType::NoCursor:
+		info.dwSize = 1;
+		info.bVisible = FALSE;
+		break;
+
+	case CursorType::SolidCursor:
+		info.dwSize = 100;
+		info.bVisible = TRUE;
+		break;
+
+	case CursorType::NormalCursor:
+		info.dwSize = 20;
+		info.bVisible = TRUE;
+		break;
+	}
+
+	// 2. 설정.
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+}
+
+void Engine::SetCursorPosition(const Vector2& position)
+{
+	SetCursorPosition(position.x, position.y);
+}
+
+void Engine::SetCursorPosition(int x, int y)
+{
+	static HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD coord = { static_cast<short>(x), static_cast<short>(y) };
+	SetConsoleCursorPosition(handle, coord);
+}
+
+void Engine::SetTargetFrameRate(float targetFrameRate)
+{
+	this->targetFrameRate = targetFrameRate;
+	targetOneFrameTime = 1.0f / targetFrameRate;
 }
 
 bool Engine::Getkey(int key)

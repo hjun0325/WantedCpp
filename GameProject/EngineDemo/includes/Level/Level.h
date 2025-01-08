@@ -1,10 +1,15 @@
 #pragma once
 
 #include "Core.h"
+#include "RTTI.h"
+#include "Container/List.h"
 
 class Actor;
-class ENGINE_API Level
+class ENGINE_API Level : public RTTI
 {
+	//RTTI 정의.
+	RTTI_DECLARATIONS(Level, RTTI)
+
 public:
 	Level();
 	virtual ~Level();
@@ -18,12 +23,14 @@ public:
 
 protected:
 	// 게임 공간에 배치되는 물체(액터) 배열
-	Actor** actors;
+	List<Actor*> actors;
 
-	//저장할 수 있는 공간의 크기
-	int capacity;
+	//// 게임 공간에 배치되는 물체(액터) 배열
+	//Actor** actors;
 
-	//액터의 수
-	int count;
+	////저장할 수 있는 공간의 크기
+	//int capacity;
+
+	////액터의 수
+	//int count;
 };
-
