@@ -1,16 +1,36 @@
-#include<iostream>
+#include <iostream>
 
 int main()
 {
-	// 0 0 0 0 0 0 0 x
-// 0 0 0 0 0 x 0 0
-// 0 0 0 x 0 0 0 0
-// 0 0 0 0 x 0 0 0
-// 0 0 0 0 0 0 x 0
-// 0 x 0 0 0 0 0 0
-// x 0 0 0 0 0 0 0
-// 0 0 x 0 0 0 0 0
-// 1 1 1 1 1 1 1 1
-// 6 5 5 5 5 5 5 6
-// 
+	int n;
+	std::cin >> n;
+
+	int* arr = new int[n];
+	int maxValue = -1000;
+	for (int ix = 0;ix < n;++ix)
+	{
+		std::cin >> arr[ix];
+		if (ix != 0)
+		{
+			if (arr[ix] < arr[ix - 1] + arr[ix])
+			{
+				arr[ix] = arr[ix - 1] + arr[ix];
+				if (maxValue < arr[ix])
+				{
+					maxValue = arr[ix];
+				}
+			}
+			else
+			{
+				if (maxValue < arr[ix])
+				{
+					maxValue = arr[ix];
+				}
+			}
+		}
+		else {
+			maxValue = arr[ix];
+		}
+	}
+	std::cout << maxValue;
 }

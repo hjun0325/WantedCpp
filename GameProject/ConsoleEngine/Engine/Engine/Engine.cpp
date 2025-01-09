@@ -1,6 +1,7 @@
 #include "PreCompiledHeader.h"
 #include "Engine.h"
 #include "Level/Level.h"
+#include "Actor/Actor.h"
 
 // 스태틱 변수 초기화.
 Engine* Engine::instance = nullptr;
@@ -61,7 +62,7 @@ void Engine::Run()
 		{
 			break;
 		}
-		
+
 		//현재 프레임 시간 저장
 		//time = timeGetTime();
 		QueryPerformanceCounter(&time);
@@ -74,20 +75,33 @@ void Engine::Run()
 		// 한 프레임 시간 계산.
 		//float targetOneFrameTime = 1.0f / targetFrameRate;
 
-		//프레임 확인
+		// 프레임 확인.
 		if (deltaTime >= targetOneFrameTime)
 		{
-			//입력 처리 (현재 키의 눌림 상태 확인)
+			// 입력 처리 (현재 키의 눌림 상태 확인).
 			ProcessInput();
 
-			Update(deltaTime);
-			Draw();
+			// 업데이트 가능한 상태에서만 프레임 업데이트 처리.
+			if (shouldUpdate)
+			{
+				Update(deltaTime);
+				Draw();
+			}
 
-			//키 상태 저장
+			// 키 상태 저장.
 			SavePreviousKeyStates();
 
-			//이전 프레임 시간 저장
+			// 이전 프레임 시간 저장.
 			previousTime = currentTime;
+
+			// 액터 정리 (삭제 요청된 액터들 정리).
+			if (mainLevel)
+			{
+				mainLevel->DestroyActor();
+			}
+
+			// 프레임 활성화.
+			shouldUpdate = true;
 		}
 
 		//Sleep(0.1);
@@ -95,17 +109,43 @@ void Engine::Run()
 		//Update(deltaTime);
 		//Draw();
 
-		////이전 프레임 시간 저장
+		//// 이전 프레임 시간 저장.
 		//previousTime = currentTime;
 	}
 }
 
 void Engine::LoadLevel(Level* newLevel)
 {
-	//기존 레벨이 있다면 삭제 후 교체
+	// 기존 레벨이 있다면 삭제 후 교체.
 
-	//메인 레벨 설정
+	// 메인 레벨 설정.
 	mainLevel = newLevel;
+}
+
+void Engine::AddActor(Actor* newActor)
+{
+	// 예외 처리.
+	if (mainLevel == nullptr)
+	{
+		return;
+	}
+
+	// 레벨에 액터 추가.
+	shouldUpdate = false;
+	mainLevel->AddActor(newActor);
+}
+
+void Engine::DestroyActor(Actor* targetActor)
+{
+	// 예외 처리.
+	if (mainLevel == nullptr)
+	{
+		return;
+	}
+
+	// 레벨에 액터 추가.
+	shouldUpdate = false;
+	targetActor->Destroy();
 }
 
 void Engine::SetCursorType(CursorType cursorType)
@@ -206,8 +246,27 @@ void Engine::Update(float deltaTime)
 	//std::cout << "DeltaTime: " << deltaTime << ", FPS: " << (1.0f / deltaTime) << "\n";
 }
 
+void Engine::Clear()
+{
+	// 화면의 (0,0)으로 이동.
+	SetCursorPosition(0, 0);
+
+	// 화면 지우기.
+	int height = 25;
+	for (int ix = 0;ix < height;++ix)
+	{
+		Log("                              \n");
+	}
+
+	// 화면의 (0,0)으로 이동.
+	SetCursorPosition(0, 0);
+}
+
 void Engine::Draw()
 {
+	// 화면 지우기.
+	Clear();
+
 	//레벨 그리기
 	if (mainLevel != nullptr)
 	{
