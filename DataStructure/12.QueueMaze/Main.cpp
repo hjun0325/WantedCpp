@@ -1,16 +1,6 @@
-// 맵 예시.
-/*
-{ '1','1','1','1','1','1' },
-{ 's','0','1','0','0','1' },
-{ '1','0','0','0','1','1' },
-{ '1','0','1','0','1','1' },
-{ '1','0','1','0','0','e' },
-{ '1','1','1','1','1','1' }
-*/
-
 #include <iostream>
 #include "Location2D.h"
-#include "Stack.h"
+#include "Queue.h"
 
 // Sleep(밀리 세컨드)
 #include <Windows.h>
@@ -100,18 +90,6 @@ void ClearScreen()
 
 	// 화면 좌표 옮기기.
 	SetConsoleCursorPosition(handle, { 0,0 });
-
-	//// 빈 문자 찍기.
-	//for (int y = 0;y < MAZE_SIZE;++y)
-	//{
-	//	for (int x = 0; x < MAZE_SIZE;++x)
-	//	{
-	//		std::cout << " ";
-	//	}
-
-	//	std::cout << "\n";
-	//}
-	//SetConsoleCursorPosition(handle, { 0,0 });
 }
 
 // 맵 출력 함수.
@@ -130,9 +108,12 @@ void PrintLocation(int row, int column, int delay)
 			// 현재 방문 중인 위치를 특정 문자로 출력.
 			if (ix == row && jx == column)
 			{
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 				std::cout << "P ";
 				continue;
 			}
+
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 
 			// 출력.
 			std::cout << map[ix][jx] << " ";
@@ -154,7 +135,7 @@ int main()
 		for (int jx = 0;jx < MAZE_SIZE;++jx)
 		{
 			// 출력.
-			std::cout << map[ix][jx] << " ";
+			//std::cout << map[ix][jx] << " ";
 
 			// 시작 지점이라면 위치 저장.
 			if (map[ix][jx] == 's')
@@ -167,29 +148,33 @@ int main()
 		std::cout << "\n";
 	}
 
-	// 시작 지점을 탐색하기 위해 스택에 삽입.
-	Stack<Location2D> stack;
-	stack.Push(Location2D(startRow, startColumn));
+	// 시작 지점을 탐색하기 위해 큐에 삽입.
+	Queue<Location2D> queue;
+	queue.Enqueue(Location2D(startRow, startColumn));
 
 	// 미로 탐색.
-	while (!stack.IsEmpty())
+	while (!queue.IsEmpty())
 	{
-		// 스택 최상위에 있는 위치 반환
+		// 큐 최상위에 있는 위치 반환
 		Location2D current;
-		stack.Pop(current);
+		queue.Dequeue(current);
 
 		int row = current.row;
 		int column = current.column;
-
+		
 		// 탐색한 위치 출력.
 		//std::cout << "(" << row << "," << column << ")";
 		//std::cout << "(" << column << "," << row << ")";
 
-		PrintLocation(row, column, 250);
+		PrintLocation(row, column, 10);
 
 		// 도착했는지 확인.
 		if (map[row][column] == 'e')
 		{
+			SetConsoleTextAttribute(
+				GetStdHandle(STD_OUTPUT_HANDLE),
+				FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+			);
 			std::cout << "\n미로 탐색 성공\n";
 			std::cin.get();
 			return 0;
@@ -198,25 +183,26 @@ int main()
 		// 방문한 곳은 다른 문자로 설정.
 		map[row][column] = '.';
 
-		// 상/하/좌/우 위치 중 이동 가능한 위치를 스택에 삽입
+		// 상/하/좌/우 위치 중 이동 가능한 위치를 큐에 삽입
 		if (IsVaildLocation(row - 1, column))
 		{
-			stack.Push(Location2D(row - 1, column));
+			queue.Enqueue(Location2D(row - 1, column));
 		}
 		if (IsVaildLocation(row + 1, column))
 		{
-			stack.Push(Location2D(row + 1, column));
+			queue.Enqueue(Location2D(row + 1, column));
 		}
 		if (IsVaildLocation(row, column - 1))
 		{
-			stack.Push(Location2D(row, column - 1));
+			queue.Enqueue(Location2D(row, column - 1));
 		}
 		if (IsVaildLocation(row, column + 1))
 		{
-			stack.Push(Location2D(row, column + 1));
+			queue.Enqueue(Location2D(row, column + 1));
 		}
 	}
 
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	std::cout << "미로 탐색 실패\n";
 	std::cin.get();
 }

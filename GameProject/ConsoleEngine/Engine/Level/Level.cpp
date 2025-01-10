@@ -58,14 +58,17 @@ void Level::AddActor(Actor* newActor)
 void Level::DestroyActor()
 {
 	// 액터 순회 후 삭제 요청된 액터를 처리.
-	for (int ix = 0;ix < actors.Size();++ix)
+	for (int ix = 0;ix < actors.Size();)
 	{
 		if (actors[ix]->isExpired)
 		{
 			delete actors[ix];
 			actors[ix] = nullptr;
 			actors.Erase(ix);
+			continue;
 		}
+
+		++ix;
 	}
 }
 
@@ -80,7 +83,7 @@ void Level::Update(float deltaTime)
 	for (Actor* actor : actors)
 	{
 		// 액터가 비활성화 상태이거나, 삭제 요청된 경우 건너뛰기.
-		if (actor->isActive || actor->isExpired)
+		if (!actor->isActive || actor->isExpired)
 		{
 			continue;
 		}
@@ -100,7 +103,7 @@ void Level::Draw()
 	for (Actor* actor : actors)
 	{
 		// 액터가 비활성화 상태이거나, 삭제 요청된 경우 건너뛰기.
-		if (actor->isActive || actor->isExpired)
+		if (!actor->isActive || actor->isExpired)
 		{
 			continue;
 		}

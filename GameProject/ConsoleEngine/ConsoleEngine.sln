@@ -6,6 +6,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{F72AEBC4-C21C-426F-90E0-E95CA44316E7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo", "Demo\Demo.vcxproj", "{AE3934D8-54E4-47B8-B266-3953540691B0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F72AEBC4-C21C-426F-90E0-E95CA44316E7} = {F72AEBC4-C21C-426F-90E0-E95CA44316E7}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextScrollDemo", "TextScrollDemo\TextScrollDemo.vcxproj", "{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F72AEBC4-C21C-426F-90E0-E95CA44316E7} = {F72AEBC4-C21C-426F-90E0-E95CA44316E7}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +39,14 @@ Global
 		{AE3934D8-54E4-47B8-B266-3953540691B0}.Release|x64.Build.0 = Release|x64
 		{AE3934D8-54E4-47B8-B266-3953540691B0}.Release|x86.ActiveCfg = Release|Win32
 		{AE3934D8-54E4-47B8-B266-3953540691B0}.Release|x86.Build.0 = Release|Win32
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Debug|x64.ActiveCfg = Debug|x64
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Debug|x64.Build.0 = Debug|x64
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Debug|x86.ActiveCfg = Debug|Win32
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Debug|x86.Build.0 = Debug|Win32
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Release|x64.ActiveCfg = Release|x64
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Release|x64.Build.0 = Release|x64
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Release|x86.ActiveCfg = Release|Win32
+		{576EF1ED-EAB8-4CA4-8C16-B674A93E219C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

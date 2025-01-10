@@ -9,8 +9,11 @@ class List //ÅÛÇÃ¸´¿¡´Â dllexport ¾²´Â°Ô ¾Æ´Ô
 {
 public:
     List()
+        : capacity(2)
     {
-        ReAllocate(2);
+        //ReAllocate(2);
+        data = new T[capacity];
+        memset(data, 0, sizeof(T) * capacity);
     }
 
     ~List()
@@ -116,6 +119,10 @@ private:
             size = newCapacity;
         }
 
+        /*if (data != nullptr)
+        {
+
+        }*/
         memcpy(newBlock, data, sizeof(T) * capacity);
         //for (int ix = 0; ix < size; ++ix)
         //{
