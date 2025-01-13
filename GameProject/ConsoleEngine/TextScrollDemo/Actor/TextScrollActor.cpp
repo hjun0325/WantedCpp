@@ -3,6 +3,9 @@
 
 TextScrollActor::TextScrollActor(const char* message)
 {
+	// 임시 문자열 버퍼.
+	temp = new char[printWidth + 1];
+
 	// 문자열 길이 구하기/
 	length = (int)strlen(message);
 
@@ -17,6 +20,7 @@ TextScrollActor::TextScrollActor(const char* message)
 TextScrollActor::~TextScrollActor()
 {
 	delete[] string;
+	delete[] temp;
 }
 
 void TextScrollActor::Update(float delatTime)
@@ -28,8 +32,30 @@ void TextScrollActor::Update(float delatTime)
 		Engine::Get().QuitGame();
 	}
 
+	// 좌우 방향키 입력 처리.
+	if (Engine::Get().Getkey(VK_LEFT))
+	{
+		// 방향 설정.
+		direction = Direction::Left;
+		shouldUpdate = true;
+	}
+
+	if (Engine::Get().Getkey(VK_RIGHT))
+	{
+		// 방향 설정.
+		direction = Direction::Right;
+		shouldUpdate = true;
+	}
+
+	// 방향키가 안 눌렸는지 확인.
+	if (!Engine::Get().Getkey(VK_LEFT) && !Engine::Get().Getkey(VK_RIGHT))
+	{
+		shouldUpdate = false;
+	}
+
 	// 딜레이 계산.
 	elapsedTime += delatTime;
+
 	// 시간이 모두 경과 했는지 확인.
 	if (elapsedTime < delayTime)
 	{
@@ -39,14 +65,25 @@ void TextScrollActor::Update(float delatTime)
 	// 시간이 경과 했으면 다음 계산을 위해 초기화.
 	elapsedTime = 0.0f;
 
-	// 화면에 그릴 문자열의 시작 인덱스 업데이트.
-	index = (index + 1) % length;
+	if (shouldUpdate)
+	{
+		if (direction == Direction::Right)
+		{
+			// 화면에 그릴 문자열의 시작 인덱스 업데이트.
+			index = (index + 1) % length;
+		}
+		else if (direction == Direction::Left)
+		{
+			// 화면에 그릴 문자열의 시작 인덱스 업데이트.
+			index = (index - 1 + length) % length;
+		}
+	}
 }
 
 void TextScrollActor::Draw()
 {
 	// 임시 문자열 버퍼.
-	char* temp = new char[printWidth + 1];
+	//char* temp = new char[printWidth + 1];
 	int tempIndex = index;
 
 	for (int ix = 0;ix < printWidth;++ix)
@@ -58,6 +95,6 @@ void TextScrollActor::Draw()
 	temp[printWidth] = '\0';
 	Log(temp);
 
-	delete[] temp;
+	//delete[] temp;
 	Engine::Get().SetCursorPosition(0, 0);
 }

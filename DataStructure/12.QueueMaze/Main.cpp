@@ -109,7 +109,7 @@ void PrintLocation(int row, int column, int delay)
 			if (ix == row && jx == column)
 			{
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
-				std::cout << "P ";
+				std::cout << "¡Ú ";
 				continue;
 			}
 
