@@ -13,7 +13,7 @@ public:
 	bool operator==(const Vector2& other);
 	bool operator!=(const Vector2& other);
 
-public: //수학 라이브러리는 public으로 변수 설정을 많이 한다.
+public: // 수학 라이브러리는 public으로 변수 설정을 많이 한다.
 	// x좌표 / y좌표.
 	int x = 0;
 	int y = 0;

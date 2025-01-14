@@ -1,12 +1,12 @@
 #pragma once
 
-#include<iostream>
+#include <iostream>
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
 
-//메모리 삭제 함수
+// 메모리 삭제 함수.
 template<typename T>
 void SafeDelete(T* pointer)
 {
@@ -17,7 +17,7 @@ void SafeDelete(T* pointer)
 	}
 }
 
-// 로그 함수
+// 로그 함수.
 template<typename... T>
 void Log(const char* format, T&&... args)
 {
@@ -26,11 +26,10 @@ void Log(const char* format, T&&... args)
 	std::cout << buffer;
 }
 
-//디버깅 용도
+// 디버깅 용도.
 #ifdef _DEBUG
 #define new new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
-// allocations to be of _CLIENT_BLOCK type
+// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the allocations to be of _CLIENT_BLOCK type.
 #else
 #define new new
 #endif

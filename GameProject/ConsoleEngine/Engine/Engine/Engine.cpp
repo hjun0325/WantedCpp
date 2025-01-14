@@ -7,7 +7,7 @@
 Engine* Engine::instance = nullptr;
 
 Engine::Engine()
-	: quit(false), mainLevel(nullptr)
+	: quit(false), mainLevel(nullptr), screenSize(40, 25)
 {
 	// 객체가 만들어질 때 싱글톤 객체 생성.
 	// 싱글톤 객체 설정.
@@ -15,6 +15,29 @@ Engine::Engine()
 
 	// 기본 타겟 프레임 속도 설정.
 	SetTargetFrameRate(60.0f);
+
+	// 화면 지울 때 사용할 버퍼 초기화.
+	// 1. 버퍼 크기 할당.
+	emptyStringBuffer = new char[(screenSize.x + 1) * screenSize.y + 1];
+
+	// 버퍼 덮어쓰기.
+	memset(emptyStringBuffer, ' ', (screenSize.x + 1) * screenSize.y + 1);
+
+	// 2. 값 할당.
+	for (int y = 0;y < screenSize.y;++y)
+	{
+		// 각 줄 끝에 개행 문자 추가.
+		emptyStringBuffer[(y * (screenSize.x + 1)) + screenSize.x] = '\n';
+	}
+
+	// 마지막에 널 문자 추가.
+	emptyStringBuffer[(screenSize.x + 1) * screenSize.y] = '\0';
+
+	// 디버깅.
+#if _DEBUG
+	char buffer[2048];
+	strcpy_s(buffer, 2048, emptyStringBuffer);
+#endif
 }
 
 Engine::~Engine()
@@ -28,18 +51,11 @@ Engine::~Engine()
 
 void Engine::Run()
 {
-	// 시작 타임 스탬프 저장.
-	// timeGetTime함수는 밀리 세컨드 단위(1/1000초) 단위.
-	//unsigned long currentTime = timeGetTime();
-	//unsigned long previousTime = 0;
-
 	// CPU시계 사용.
 	// 시스템 시계 ->고해상도 카운터 (초당 10000000번).
 	// 메인보드에 시계가 있음.
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
-
-	//std::cout << "Frequency: " << frequency.QuadPart << "\n";
 
 	//시작 시간 및 이전 시간을 위한 변수
 	LARGE_INTEGER time;
@@ -47,12 +63,6 @@ void Engine::Run()
 
 	int64_t currentTime = time.QuadPart;
 	int64_t previousTime = 0;
-
-	//프레임 제한
-	//float targetFrameRate = 60.0f;
-
-	//한 프레임 시간 계산
-	//float targetOneFrameTime = 1.0f / targetFrameRate;
 
 	//Game-Loop
 	while (true)
@@ -64,16 +74,12 @@ void Engine::Run()
 		}
 
 		//현재 프레임 시간 저장
-		//time = timeGetTime();
 		QueryPerformanceCounter(&time);
 		currentTime = time.QuadPart;
 
 		//프레임 시간 계산
 		float deltaTime = static_cast<float>((currentTime - previousTime) /
 			static_cast<float>(frequency.QuadPart));
-
-		// 한 프레임 시간 계산.
-		//float targetOneFrameTime = 1.0f / targetFrameRate;
 
 		// 프레임 확인.
 		if (deltaTime >= targetOneFrameTime)
@@ -203,13 +209,13 @@ bool Engine::GetkeyUp(int key)
 
 void Engine::QuitGame()
 {
-	//종료 플래그 설정
+	// 종료 플래그 설정.
 	quit = true;
 }
 
 Engine& Engine::Get()
 {
-	//싱글톤 객체 변환
+	// 싱글톤 객체 변환.
 	return *instance;
 }
 
@@ -223,19 +229,11 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	//ESC키로 게임 종료
-	if (GetkeyDown(VK_ESCAPE))
-	{
-		QuitGame();
-	}
-
-	//레벨 업데이트
+	// 레벨 업데이트.
 	if (mainLevel != nullptr)
 	{
 		mainLevel->Update(deltaTime);
 	}
-
-	//std::cout << "DeltaTime: " << deltaTime << ", FPS: " << (1.0f / deltaTime) << "\n";
 }
 
 void Engine::Clear()
@@ -244,11 +242,7 @@ void Engine::Clear()
 	SetCursorPosition(0, 0);
 
 	// 화면 지우기.
-	int height = 25;
-	for (int ix = 0;ix < height;++ix)
-	{
-		std::cout << "                               \n";
-	}
+	std::cout << emptyStringBuffer;
 
 	// 화면의 (0,0)으로 이동.
 	SetCursorPosition(0, 0);
@@ -259,7 +253,7 @@ void Engine::Draw()
 	// 화면 지우기.
 	Clear();
 
-	//레벨 그리기
+	// 레벨 그리기.
 	if (mainLevel != nullptr)
 	{
 		mainLevel->Draw();

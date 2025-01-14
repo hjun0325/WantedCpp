@@ -5,7 +5,7 @@
 #include <iostream>
 
 template <typename T>
-class List //템플릿에는 dllexport 쓰는게 아님
+class List // 템플릿에는 dllexport 쓰는게 아님.
 {
 public:
     List()
@@ -119,16 +119,7 @@ private:
             size = newCapacity;
         }
 
-        /*if (data != nullptr)
-        {
-
-        }*/
         memcpy(newBlock, data, sizeof(T) * capacity);
-        //for (int ix = 0; ix < size; ++ix)
-        //{
-        //    // newBlock[ix] = data[ix];
-        //    newBlock[ix] = std::move(data[ix]);
-        //}
 
         delete[] data;
         data = newBlock;

@@ -1,12 +1,13 @@
 #include "TextScrollActor.h"
 #include "Engine/Engine.h"
+#include "Game/Game.h"
 
 TextScrollActor::TextScrollActor(const char* message)
 {
 	// 임시 문자열 버퍼.
 	temp = new char[printWidth + 1];
 
-	// 문자열 길이 구하기/
+	// 문자열 길이 구하기.
 	length = (int)strlen(message);
 
 	// 문자열 복사.
@@ -29,7 +30,7 @@ void TextScrollActor::Update(float delatTime)
 	// ESC 종료.
 	if (Engine::Get().GetkeyDown(VK_ESCAPE))
 	{
-		Engine::Get().QuitGame();
+		Game::Get().ToggleMenu();
 	}
 
 	// 좌우 방향키 입력 처리.
@@ -82,8 +83,6 @@ void TextScrollActor::Update(float delatTime)
 
 void TextScrollActor::Draw()
 {
-	// 임시 문자열 버퍼.
-	//char* temp = new char[printWidth + 1];
 	int tempIndex = index;
 
 	for (int ix = 0;ix < printWidth;++ix)
@@ -95,6 +94,5 @@ void TextScrollActor::Draw()
 	temp[printWidth] = '\0';
 	Log(temp);
 
-	//delete[] temp;
 	Engine::Get().SetCursorPosition(0, 0);
 }

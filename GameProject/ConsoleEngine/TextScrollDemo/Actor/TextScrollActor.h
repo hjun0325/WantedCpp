@@ -32,7 +32,7 @@ private:
     // 화면에 보여줄 문자열 값.
     char* string = nullptr;
 
-    // 문자열 길이;
+    // 문자열 길이.
     int length = 0;
 
     // 화면에 보여줄 문자열의 시작 인덱스.
