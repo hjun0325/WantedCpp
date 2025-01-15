@@ -76,34 +76,34 @@ void Engine::Run()
 
 	//std::cout << "Frequency: " << frequency.QuadPart << "\n";
 
-	//시작 시간 및 이전 시간을 위한 변수
+	// 시작 시간 및 이전 시간을 위한 변수.
 	LARGE_INTEGER time;
 	QueryPerformanceCounter(&time);
 
 	int64_t currentTime = time.QuadPart;
 	int64_t previousTime = currentTime;
 
-	//프레임 제한
+	// 프레임 제한.
 	//float targetFrameRate = 60.0f;
 
-	//한 프레임 시간 계산
+	// 한 프레임 시간 계산.
 	//float targetOneFrameTime = 1.0f / targetFrameRate;
 
 	//Game-Loop
 	while (true)
 	{
-		//종료 조건
+		// 종료 조건.
 		if (quit)
 		{
 			break;
 		}
-
-		//현재 프레임 시간 저장
+		
+		// 현재 프레임 시간 저장.
 		//time = timeGetTime();
 		QueryPerformanceCounter(&time);
 		currentTime = time.QuadPart;
 
-		//프레임 시간 계산
+		// 프레임 시간 계산.
 		float deltaTime = static_cast<float>((currentTime - previousTime) /
 			static_cast<float>(frequency.QuadPart));
 
@@ -238,13 +238,13 @@ bool Engine::GetkeyUp(int key)
 
 void Engine::QuitGame()
 {
-	//종료 플래그 설정
+	// 종료 플래그 설정.
 	quit = true;
 }
 
 Engine& Engine::Get()
 {
-	//싱글톤 객체 변환
+	// 싱글톤 객체 변환.
 	return *instance;
 }
 
@@ -258,13 +258,13 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	//ESC키로 게임 종료
+	// ESC키로 게임 종료.
 	if (GetkeyDown(VK_ESCAPE))
 	{
 		QuitGame();
 	}
 
-	//레벨 업데이트
+	// 레벨 업데이트.
 	if (mainLevel != nullptr)
 	{
 		mainLevel->Update(deltaTime);
@@ -296,7 +296,7 @@ void Engine::Draw()
 	// 화면 지우기.
 	Clear();
 
-	//레벨 그리기
+	// 레벨 그리기.
 	if (mainLevel != nullptr)
 	{
 		mainLevel->Draw();

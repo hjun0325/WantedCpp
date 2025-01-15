@@ -3,13 +3,13 @@
 #include "Core.h"
 #include "Math/Vector2.h"
 
-//입력 처리를 위한 구조체
+// 입력 처리를 위한 구조체.
 struct KeyState
 {
-	//현재 프레임에 키가 눌렸는지 확인
+	// 현재 프레임에 키가 눌렸는지 확인.
 	bool isKeyDown = false;
 
-	//이전 프레임에 키가 눌렸는지 확인
+	// 이전 프레임에 키가 눌렸는지 확인.
 	bool wasKeyDown = false;
 };
 
@@ -23,17 +23,17 @@ enum class CursorType
 
 class Level;
 class Actor;
-// 엔진 클래스
+// 엔진 클래스.
 class ENGINE_API Engine
 {
 public:
 	Engine();
 	virtual ~Engine();
 
-	//엔진 실행 함수
+	// 엔진 실행 함수.
 	void Run();
 
-	//레벨 추가 함수
+	// 레벨 추가 함수.
 	void LoadLevel(Level* newLevel);
 
 	// 액터 추가/삭제 함수.
@@ -51,25 +51,25 @@ public:
 	// 타겟 프레임 속도 설정 함수.
 	void SetTargetFrameRate(float targetFrameRate);
 
-	//입력 관련 함수
+	// 입력 관련 함수.
 	bool Getkey(int key);
 	bool GetkeyDown(int key);
 	bool GetkeyUp(int key);
 
-	//엔진 종료 함수
+	// 엔진 종료 함수.
 	void QuitGame();
 
-	//싱글톤 객체 접근 함수
+	// 싱글톤 객체 접근 함수.
 	static Engine& Get();
 
 protected:
-	void ProcessInput();			//입력 처리
-	void Update(float deltaTime);	//Tick();
+	void ProcessInput();			// 입력 처리.
+	void Update(float deltaTime);	// Tick().
 
 	void Clear();					// 화면 지우기.
-	void Draw();					//Render();
+	void Draw();					// Render().
 
-	//이전 값을 저장하는 함수
+	// 이전 값을 저장하는 함수.
 	void SavePreviousKeyStates();
 
 protected:
@@ -80,16 +80,16 @@ protected:
 	// 한 프레임 시간 값(단위: 초).
 	float targetOneFrameTime = 0.0f;
 
-	//종료할 때 설정할 변수
+	// 종료할 때 설정할 변수.
 	bool quit;
 
-	//키 상대를 저장하는 배열
+	// 키 상대를 저장하는 배열.
 	KeyState keyState[255];
 
-	//싱글톤 구현을 위한 전역 변수 선언
+	// 싱글톤 구현을 위한 전역 변수 선언.
 	static Engine* instance;
 
-	//메인 레벨 변수
+	// 메인 레벨 변수.
 	Level* mainLevel;
 
 	// 프레임을 업데이트해야 하는지 여부를 나타내는 변수.

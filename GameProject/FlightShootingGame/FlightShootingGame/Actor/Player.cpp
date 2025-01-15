@@ -7,7 +7,9 @@
 Player::Player(const char* image)
 	: Super(image)
 {
-	position = Vector2(0, 20);
+	// 플레이어 시작 위치.
+	//position = Vector2(0, 20);
+	position = Vector2(0, Engine::Get().ScreenSize().y - 1);
 }
 
 void Player::Update(float deltaTime)
@@ -48,30 +50,4 @@ void Player::Update(float deltaTime)
 
 		SetPosition(newPosition);
 	}
-
-	//if (Engine::Get().Getkey(VK_UP))
-	//{
-	//	// 새 위치 계산.
-	//	Vector2 newPosition = position;
-	//	--newPosition.y;
-	//	if (newPosition.y < 0)
-	//	{
-	//		newPosition.y = 0;
-	//	}
-
-	//	SetPosition(newPosition);
-	//}
-
-	//if (Engine::Get().Getkey(VK_DOWN))
-	//{
-	//	// 새 위치 계산.
-	//	Vector2 newPosition = position;
-	//	++newPosition.y;
-	//	if (newPosition.y > 20)
-	//	{
-	//		newPosition.y = 20;
-	//	}
-
-	//	SetPosition(newPosition);
-	//}
 }

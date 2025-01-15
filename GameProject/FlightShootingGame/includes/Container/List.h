@@ -5,7 +5,7 @@
 #include <iostream>
 
 template <typename T>
-class List //템플릿에는 dllexport 쓰는게 아님
+class List // 템플릿에는 dllexport 쓰는게 아님.
 {
 public:
     List()
