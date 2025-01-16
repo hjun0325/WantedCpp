@@ -52,9 +52,9 @@ public:
 	void SetTargetFrameRate(float targetFrameRate);
 
 	// 입력 관련 함수.
-	bool Getkey(int key);
-	bool GetkeyDown(int key);
-	bool GetkeyUp(int key);
+	bool GetKey(int key);
+	bool GetKeyDown(int key);
+	bool GetKeyUp(int key);
 
 	// 엔진 종료 함수.
 	void QuitGame();
