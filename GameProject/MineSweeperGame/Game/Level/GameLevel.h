@@ -7,7 +7,7 @@ struct Cell
 	int surroundingMines = 0;    // 주변 지뢰 수
 	bool hasMine = false;            // 지뢰 여부
 	bool isRevealed = false;         // 셀의 공개 여부
-	bool isFlagged = false;          // 셀에 깃발이 꽂혔는지 여부
+	bool isFlagged = false;          // 깃발 여부
 };
 
 

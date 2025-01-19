@@ -1,68 +1,83 @@
 #include "Player.h"
-#include "Engine/Engine.h"
-#include "Game/Game.h"
+#include "Actor/Block.h"
 #include "Level/GameLevel.h"
+#include <Engine/Engine.h>
 
-Player::Player(const Vector2& position, GameLevel* level)
-	: DrawableActor("P"), refLevel(level)
+Player::Player(GameLevel* level)
+	: refLevel(level)
 {
-	// 위치 설정.
-	this->position = position;
+	mainBlock = new Block();
+}
 
-	// 색상 설정.
-	color = Color::White;
-
+Player::~Player()
+{
+	delete mainBlock;
 }
 
 void Player::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
-	if (Engine::Get().GetKeyDown(VK_ESCAPE))
-	{
-		//Engine::Get().QuitGame();
-		// 메뉴 토글.
-		Game::Get().ToggleMenu();
-	}
-
-	// 상하좌우.
+	// 좌우 이동.
 	if (Engine::Get().GetKeyDown(VK_LEFT))
 	{
-		// 이동 가능한지 확인.
-		if (refLevel->CanPlayerMove(Vector2(position.x - 1, position.y)))
+		if (refLevel->CanPlayerMove(Vector2(mainBlock->blockPosition.x - 1, mainBlock->blockPosition.y)))
 		{
-			position.x -= 1;
+			mainBlock->blockPosition.x -= 1;
 		}
-		//position.x = position.x < 0 ? 0 : position.x;
 	}
 	if (Engine::Get().GetKeyDown(VK_RIGHT))
 	{
-		// 이동 가능한지 확인.
-		if (refLevel->CanPlayerMove(Vector2(position.x + 1, position.y)))
+		if (refLevel->CanPlayerMove(Vector2(mainBlock->blockPosition.x + 1, mainBlock->blockPosition.y)))
 		{
-			position.x += 1;
+			mainBlock->blockPosition.x += 1;
 		}
-		//position.x = position.x >= Engine::Get().ScreenSize().x ?
-			//Engine::Get().ScreenSize().x : position.x;
-	}
-	if (Engine::Get().GetKeyDown(VK_UP))
-	{
-		// 이동 가능한지 확인.
-		if (refLevel->CanPlayerMove(Vector2(position.x, position.y - 1)))
-		{
-			position.y -= 1;
-		}
-		//position.y = position.y < 0 ? 0 : position.y;
-	}
-	if (Engine::Get().GetKeyDown(VK_DOWN))
-	{
-		// 이동 가능한지 확인.
-		if (refLevel->CanPlayerMove(Vector2(position.x, position.y + 1)))
-		{
-			position.y += 1;
-		}
-		//position.y = position.y >= Engine::Get().ScreenSize().y ?
-			//Engine::Get().ScreenSize().y : position.y;
 	}
 
+	// 소프트 드랍.
+	if (Engine::Get().GetKeyDown(VK_DOWN))
+	{
+		if (refLevel->CanPlayerMove(Vector2(mainBlock->blockPosition.x, mainBlock->blockPosition.y + 1)))
+		{
+			mainBlock->blockPosition.y += 1;
+		}
+		// 더 이상 내려갈 수 있는 곳이 없는 경우.
+		else
+		{
+			// 맵에 현재 블록 배치.
+			refLevel->PlaceBlocksOnMap(Vector2(mainBlock->blockPosition.x, mainBlock->blockPosition.y));
+
+			// 메인 블록에서 빼고 맵에 정수 값 2로 배치.
+			if (mainBlock != nullptr)
+			{
+				delete mainBlock;
+				mainBlock = nullptr;
+			}
+			mainBlock = new Block();
+		}
+	}
+
+	// 하드 드랍.
+	if (Engine::Get().GetKeyDown(VK_ESCAPE))
+	{
+
+	}
+
+	// 오른쪽 90도 회전.
+	if (Engine::Get().GetKeyDown(VK_UP))
+	{
+
+	}
+
+	// 왼쪽 90도 회전.
+	if (Engine::Get().GetKeyDown(VK_LCONTROL))
+	{
+		refLevel->RotateBlock();
+	}
+
+	// 잡기.
+	if (Engine::Get().GetKeyDown(VK_LSHIFT))
+	{
+
+	}
 }

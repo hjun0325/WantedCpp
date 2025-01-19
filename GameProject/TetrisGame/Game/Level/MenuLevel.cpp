@@ -3,38 +3,57 @@
 
 MenuLevel::MenuLevel()
 {
-	menuItems.PushBack(new MenuItem("Resume Game", []() { Game::Get().ToggleMenu(); }));
-	menuItems.PushBack(new MenuItem("Quit Game", []() { Game::Get().QuitGame(); }));
-	length = menuItems.Size();
+	// 메뉴 초기화.
+	items.emplace_back(new MenuItem(
+		"Resume Game",
+		[]() {Game::Get().ToggleLevel("Resume Game");})
+	);
+	items.emplace_back(new MenuItem(
+		"Main",
+		[]() {Game::Get().ToggleLevel("Main");})
+	);
+
+	// 메뉴 개수 저장.
+	itemCount = (int)items.size();
 }
 
 MenuLevel::~MenuLevel()
 {
-	for (auto* item : menuItems)
+	for (MenuItem* item : items)
 	{
 		delete item;
 	}
+
+	items.clear();
 }
 
 void MenuLevel::Update(float deltaTime)
 {
-	if (Game::Get().GetKeyDown(VK_ESCAPE))
+	Super::Update(deltaTime);
+
+	if (Engine::Get().GetKeyDown(VK_ESCAPE))
 	{
-		Game::Get().ToggleMenu();
+		Game::Get().ToggleLevel("Resume Game");
 	}
 
+	// 위아래 방향키.
 	if (Game::Get().GetKeyDown(VK_UP))
 	{
-		currentIndex = (currentIndex - 1 + length) % length;
-	}
-	if (Game::Get().GetKeyDown(VK_DOWN))
-	{
-		currentIndex = (currentIndex + 1) % length;
+		// 인덱스 변환.
+		currentSelectedIndex
+			= (currentSelectedIndex - 1 + itemCount) % itemCount;
 	}
 
+	if (Game::Get().GetKeyDown(VK_DOWN))
+	{
+		currentSelectedIndex
+			= (currentSelectedIndex + 1 + itemCount) % itemCount;
+	}
+
+	// 엔터키.
 	if (Game::Get().GetKeyDown(VK_RETURN))
 	{
-		menuItems[currentIndex]->onSelected();
+		items[currentSelectedIndex]->onSelected();
 	}
 }
 
@@ -42,14 +61,12 @@ void MenuLevel::Draw()
 {
 	Super::Draw();
 
-	Engine::Get().SetCursorPosition(0, 0);
-	
-	SetColor(unselectedColor);
-	Log("Sokoban Game\n\n");
+	// 메뉴 제목 출력.
+	Engine::Get().Draw(Vector2(0, 0), "Menu");
 
-	for (int ix = 0; ix < length; ++ix)
+	// 루프 순회하면서 메뉴 텍스트 출력.
+	for (int ix = 0; ix < itemCount; ++ix)
 	{
-		SetColor(ix == currentIndex ? selectedColor : unselectedColor);
-		Log("%s\n", menuItems[ix]->menuText);
+		Engine::Get().Draw(Vector2(0, 2 + ix), items[ix]->text, ix == currentSelectedIndex ? selectedColor : unselectedColor);
 	}
 }

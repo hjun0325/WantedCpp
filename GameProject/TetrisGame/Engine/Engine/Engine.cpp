@@ -1,8 +1,28 @@
 #include "PreCompiledHeader.h"
+
 #include "Engine.h"
+#include <Windows.h>
+#include <iostream>
+
 #include "Level/Level.h"
 #include "Actor/Actor.h"
-#include <time.h>
+
+
+#include "Render/ScreenBuffer.h"
+
+// 콘솔 창 메시지 콜백 함수.
+BOOL WINAPI MessageProcessor(DWORD message)
+{
+	switch (message)
+	{
+	case CTRL_CLOSE_EVENT:
+		Engine::Get().QuitGame();
+		return true;
+
+	default:
+		return false;
+	}
+}
 
 // 스태틱 변수 초기화.
 Engine* Engine::instance = nullptr;
@@ -13,40 +33,29 @@ Engine::Engine()
 	// 랜덤 시드 설정.
 	srand((unsigned int)time(nullptr));
 
-	// 객체가 만들어질 때 싱글톤 객체 생성.
 	// 싱글톤 객체 설정.
 	instance = this;
 
 	// 기본 타겟 프레임 속도 설정.
 	SetTargetFrameRate(60.0f);
 
-	// 화면 지울 때 사용할 버퍼 초기화.
+	// 화면 버퍼 초기화.
 	// 1. 버퍼 크기 할당.
-	emptyStringBuffer = new char[(screenSize.x + 1) * screenSize.y + 1];
+	imageBuffer = new CHAR_INFO[(screenSize.x + 1) * screenSize.y + 1];
 
-	// 버퍼 덮어쓰기.
-	memset(emptyStringBuffer, ' ', (screenSize.x + 1) * screenSize.y + 1);
+	// 버퍼 초기화.
+	ClearImageBuffer();
 
-	// 2. 값 할당.
-	for (int y = 0;y < screenSize.y;++y)
-	{
-		/*for (int x = 0; x < screenSize.x;++x)
-		{
-			emptyStringBuffer[(y * (screenSize.x + 1)) + x] = ' ';
-		}*/
+	// 두 개의 버퍼 생성 (버퍼를 번갈아 사용하기 위해-더블 버퍼링).
+	COORD size = { (short)screenSize.x, (short)screenSize.y };
+	renderTargets[0] = new ScreenBuffer(GetStdHandle(STD_OUTPUT_HANDLE), size);
+	renderTargets[1] = new ScreenBuffer(size);
 
-		// 각 줄 끝에 개행 문자 추가.
-		emptyStringBuffer[(y * (screenSize.x + 1)) + screenSize.x] = '\n';
-	}
+	// 스왑 버퍼.
+	Present();
 
-	// 마지막에 널 문자 추가.
-	emptyStringBuffer[(screenSize.x + 1) * screenSize.y] = '\0';
-
-	// 디버깅.
-#if _DEBUG
-	char buffer[2048];
-	strcpy_s(buffer, 2048, emptyStringBuffer);
-#endif
+	// 콘솔 창 이벤트 콜백 함수 등록.
+	SetConsoleCtrlHandler(MessageProcessor, true);
 }
 
 Engine::~Engine()
@@ -58,18 +67,22 @@ Engine::~Engine()
 	}
 
 	// 클리어 버퍼 삭제.
-	delete[] emptyStringBuffer;
+	delete[] imageBuffer;
+
+	// 화면 버퍼 삭제.
+	delete renderTargets[0];
+	delete renderTargets[1];
 }
 
 void Engine::Run()
 {
 	// 시작 타임 스탬프 저장.
-	// timeGetTime함수는 밀리 세컨드 단위(1/1000초) 단위.
+	// timeGetTime 함수는 밀리세컨드(1/1000초) 단위.
 	//unsigned long currentTime = timeGetTime();
 	//unsigned long previousTime = 0;
 
-	// CPU시계 사용.
-	// 시스템 시계 ->고해상도 카운터 (초당 10000000번).
+	// CPU 시계 사용.
+	// 시스템 시계 -> 고해상도 카운터. (10000000).
 	// 메인보드에 시계가 있음.
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
@@ -84,12 +97,12 @@ void Engine::Run()
 	int64_t previousTime = currentTime;
 
 	// 프레임 제한.
-	//float targetFrameRate = 60.0f;
+	//float targetFrameRate = 90.0f;
 
 	// 한 프레임 시간 계산.
 	//float targetOneFrameTime = 1.0f / targetFrameRate;
 
-	//Game-Loop
+	// Game-Loop.
 	while (true)
 	{
 		// 종료 조건.
@@ -97,15 +110,15 @@ void Engine::Run()
 		{
 			break;
 		}
-		
+
 		// 현재 프레임 시간 저장.
 		//time = timeGetTime();
 		QueryPerformanceCounter(&time);
 		currentTime = time.QuadPart;
 
 		// 프레임 시간 계산.
-		float deltaTime = static_cast<float>((currentTime - previousTime) /
-			static_cast<float>(frequency.QuadPart));
+		float deltaTime = static_cast<float>(currentTime - previousTime) /
+			static_cast<float>(frequency.QuadPart);
 
 		// 한 프레임 시간 계산.
 		//float targetOneFrameTime = 1.0f / targetFrameRate;
@@ -124,7 +137,7 @@ void Engine::Run()
 			}
 
 			// 키 상태 저장.
-			SavePreviousKeyStates();
+			SavePreviouseKeyStates();
 
 			// 이전 프레임 시간 저장.
 			previousTime = currentTime;
@@ -132,6 +145,7 @@ void Engine::Run()
 			// 액터 정리 (삭제 요청된 액터들 정리).
 			if (mainLevel)
 			{
+				//mainLevel->DestroyActor();
 				mainLevel->ProcessAddedAndDestroyedActor();
 			}
 
@@ -177,42 +191,28 @@ void Engine::DestroyActor(Actor* targetActor)
 
 void Engine::SetCursorType(CursorType cursorType)
 {
-	// 1. 커서 속성 구조체 설정.
-	CONSOLE_CURSOR_INFO info = { };
+	GetRenderer()->SetCursorType(cursorType);
+}
 
-	// 타입 별로 구조체 값 설정.
-	switch (cursorType)
+//void Engine::SetCursorPosition(const Vector2& position)
+//{
+//	SetCursorPosition(position.x, position.y);
+//}
+//
+//void Engine::SetCursorPosition(int x, int y)
+//{
+//	GetRenderer()->SetCursorPosition(x, y);
+//}
+
+void Engine::Draw(const Vector2& position, const char* image, Color color)
+{
+	for (int ix = 0; ix < (int)strlen(image); ++ix)
 	{
-	case CursorType::NoCursor:
-		info.dwSize = 1;
-		info.bVisible = FALSE;
-		break;
-
-	case CursorType::SolidCursor:
-		info.dwSize = 100;
-		info.bVisible = TRUE;
-		break;
-
-	case CursorType::NormalCursor:
-		info.dwSize = 20;
-		info.bVisible = TRUE;
-		break;
+		int index = (position.y * (screenSize.x)) + position.x + ix;
+		imageBuffer[index].Char.AsciiChar = image[ix];
+		//imageBuffer[index].Char.UnicodeChar = image[ix];
+		imageBuffer[index].Attributes = (unsigned long)color;
 	}
-
-	// 2. 설정.
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-}
-
-void Engine::SetCursorPosition(const Vector2& position)
-{
-	SetCursorPosition(position.x, position.y);
-}
-
-void Engine::SetCursorPosition(int x, int y)
-{
-	static HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD coord = { static_cast<short>(x), static_cast<short>(y) };
-	SetConsoleCursorPosition(handle, coord);
 }
 
 void Engine::SetTargetFrameRate(float targetFrameRate)
@@ -244,13 +244,13 @@ void Engine::QuitGame()
 
 Engine& Engine::Get()
 {
-	// 싱글톤 객체 변환.
+	// 싱글톤 객체 반환.
 	return *instance;
 }
 
 void Engine::ProcessInput()
 {
-	for (int ix = 0;ix < 255;++ix)
+	for (int ix = 0; ix < 255; ++ix)
 	{
 		keyState[ix].isKeyDown = (GetAsyncKeyState(ix) & 0x8000) ? true : false;
 	}
@@ -258,55 +258,73 @@ void Engine::ProcessInput()
 
 void Engine::Update(float deltaTime)
 {
-	// ESC키로 게임 종료.
-	/*if (GetKeyDown(VK_ESCAPE))
-	{
-		QuitGame();
-	}*/
-
 	// 레벨 업데이트.
 	if (mainLevel != nullptr)
 	{
 		mainLevel->Update(deltaTime);
 	}
-
-	//std::cout << "DeltaTime: " << deltaTime << ", FPS: " << (1.0f / deltaTime) << "\n";
 }
 
 void Engine::Clear()
 {
-	// 화면의 (0,0)으로 이동.
-	SetCursorPosition(0, 0);
-
-	// 화면 지우기.
-	std::cout << emptyStringBuffer;
-
-	/*int height = 25;
-	for (int ix = 0;ix < height;++ix)
-	{
-		std::cout << "                               \n";
-	}*/
-
-	// 화면의 (0,0)으로 이동.
-	SetCursorPosition(0, 0);
+	ClearImageBuffer();
+	GetRenderer()->Clear();
 }
 
 void Engine::Draw()
 {
 	// 화면 지우기.
-	//Clear();
+	Clear();
 
 	// 레벨 그리기.
 	if (mainLevel != nullptr)
 	{
 		mainLevel->Draw();
 	}
+
+	// 백버퍼에 데이터 쓰기.
+	GetRenderer()->Draw(imageBuffer);
+
+	// 프론트<->백 버퍼 교환.
+	Present();
 }
 
-void Engine::SavePreviousKeyStates()
+void Engine::Present()
 {
-	for (int ix = 0;ix < 255;++ix)
+	// Swap Buffer.
+	SetConsoleActiveScreenBuffer(GetRenderer()->buffer);
+	currentRenderTargetIndex = 1 - currentRenderTargetIndex;
+}
+
+void Engine::SavePreviouseKeyStates()
+{
+	for (int ix = 0; ix < 255; ++ix)
 	{
 		keyState[ix].wasKeyDown = keyState[ix].isKeyDown;
 	}
+}
+
+void Engine::ClearImageBuffer()
+{
+	// 버퍼 덮어쓰기.
+	for (int y = 0; y < screenSize.y; ++y)
+	{
+		// 버퍼 덮어쓰기.
+		for (int x = 0; x < screenSize.x + 1; ++x)
+		{
+			auto& buffer = imageBuffer[(y * (screenSize.x + 1)) + x];
+			buffer.Char.AsciiChar = ' ';
+			buffer.Attributes = 0;
+		}
+
+		// 각 줄 끝에 개행 문자 추가.
+		auto& buffer = imageBuffer[(y * (screenSize.x + 1)) + screenSize.x];
+		buffer.Char.AsciiChar = ' ';
+		buffer.Attributes = 0;
+	}
+
+	// 마지막에 널 문자 추가.
+	auto& buffer = imageBuffer[(screenSize.x + 1) * screenSize.y];
+	buffer.Char.AsciiChar = ' ';
+	buffer.Attributes = 0;
 }

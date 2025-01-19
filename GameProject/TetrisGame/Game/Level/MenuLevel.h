@@ -1,29 +1,35 @@
 #pragma once
 
-#include "Level/Level.h"
-#include "Container/List.h"
+#include <Level/Level.h>
+#include <vector>
 
+// 메뉴 아이템.
 struct MenuItem
 {
+	// 이벤트 선언.
 	using OnSelected = void (*)();
 
 	MenuItem(const char* text, OnSelected onSelected)
+		: onSelected(onSelected)
 	{
-		size_t length = strlen(text);
-		menuText = new char[length + 1];
-		strcpy_s(menuText, length + 1, text);
-
-		this->onSelected = onSelected;
+		size_t length = strlen(text) + 1;
+		this->text = new char[length];
+		strcpy_s(this->text, length, text);
 	}
 
 	~MenuItem()
 	{
-		delete[] menuText;
+		delete[] text;
+		text = nullptr;
 	}
 
-	char* menuText;
+	// 메뉴에서 보여줄 텍스트.
+	char* text;
+
+	// 선택했을 때 실행할 함수를 저장하는 포인터.
 	OnSelected onSelected;
 };
+
 
 class MenuLevel : public Level
 {
@@ -37,10 +43,18 @@ public:
 	virtual void Draw() override;
 
 private:
-	int currentIndex = 0;
+	// 현재 선택된 메뉴 번호 (인덱스).
+	int currentSelectedIndex = 0;
+
+	// 선택된 메뉴의 색상.
 	Color selectedColor = Color::Green;
+
+	// 선택되지 않은 메뉴의 색상.
 	Color unselectedColor = Color::White;
 
-	List<MenuItem*> menuItems;
-	int length = 0;
+	// 메뉴 저장소.
+	std::vector<MenuItem*> items;
+
+	// 메뉴 아이템 개수.
+	int itemCount = 0;
 };

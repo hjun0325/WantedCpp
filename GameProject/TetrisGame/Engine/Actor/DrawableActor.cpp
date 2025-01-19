@@ -2,8 +2,16 @@
 #include "DrawableActor.h"
 #include "Engine/Engine.h"
 
+#ifdef _DEBUG
+#define new new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
+// allocations to be of _CLIENT_BLOCK type
+#else
+#define new new
+#endif
+
 DrawableActor::DrawableActor(const char* image)
-	: Actor()
+	: Actor()/*, image(image)*/
 {
 	// 전달 받은 문자열 복사.
 	auto length = strlen(image) + 1;
@@ -24,22 +32,24 @@ void DrawableActor::Draw()
 	Super::Draw();
 
 	// 색상 설정.
-	SetColor(color);
+	//Engine::Get().SetColor(color);
 
 	// 그리기.
 	// 1단계: 콘솔 좌표 옮기기.
-	Engine::Get().SetCursorPosition(position);
+	//Engine::Get().SetCursorPosition(position);
 
 	// 2단계: 그리기 (콘솔 출력).
-	Log(image);
+	//Log(image);
+
+	Engine::Get().Draw(position, image, color);
 
 	// 색상 복구.
-	SetColor(Color::White);
+	//Engine::Get().SetColor(Color::White);
 }
 
 void DrawableActor::SetPosition(const Vector2& newPosition)
 {
-	// 이전의 위치를 먼저 지우기.
+	//// 이전의 위치를 먼저 지우기.
 	//Engine::Get().SetCursorPosition(position);
 	//Log(" ");
 
@@ -65,7 +75,7 @@ bool DrawableActor::Intersect(const DrawableActor& other)
 		return false;
 	}
 
-	// 다른 액터의 오른쪽 끝 위치가 내 왼쪽 끝 위치를 벗어나면 충돌 안함.
+	// 다른 액터의 오른쪽 끝 위치가 내 왼쪽 끝 위치보다 작으면 충돌 안함.
 	if (otherMax < min)
 	{
 		return false;

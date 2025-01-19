@@ -27,12 +27,11 @@ GameLevel::GameLevel()
 			++mineCount;
 		}
 	}
-
 }
 
 void GameLevel::Update(float deltaTime)
 {
-	
+	//Engine::Get().MouseInputCoordinates();
 }
 
 void GameLevel::Draw()
@@ -41,8 +40,11 @@ void GameLevel::Draw()
 	{
 		for (int jx = 0; jx < mapSize;++jx)
 		{
-			std::cout << "в├ ";
+			std::cout << "бс" << " ";
 		}
 		std::cout << "\n";
 	}
+
+	Vector2 v2 = Engine::Get().MouseInputCoordinates();
+	std::cout << v2.x << " " << v2.y << "\n";
 }

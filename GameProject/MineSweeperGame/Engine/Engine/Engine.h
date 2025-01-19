@@ -48,6 +48,9 @@ public:
 	// 화면 크기 반환 함수.
 	inline Vector2 ScreenSize() const { return screenSize; }
 
+	// 마우스 입력 좌표 받아오는 함수.
+	Vector2 MouseInputCoordinates();
+
 	// 타겟 프레임 속도 설정 함수.
 	void SetTargetFrameRate(float targetFrameRate);
 
@@ -100,4 +103,7 @@ protected:
 
 	// 화면 지울 때 사용할 버퍼 (Buffer/Blob).
 	char* emptyStringBuffer = nullptr;
+
+	// 마우스 입력 좌표.
+	Vector2 mouseCoordinates;
 };

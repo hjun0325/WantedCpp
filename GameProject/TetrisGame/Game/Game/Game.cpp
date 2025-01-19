@@ -1,47 +1,53 @@
 #include "Game.h"
-
+#include "Level/StartLevel.h"
+#include "Level/GameLevel.h"
 #include "Level/MenuLevel.h"
 
 Game* Game::instance = nullptr;
 
 Game::Game()
-	: Engine()
 {
+	// 커서 안보이게 설정
+	SetCursorType(CursorType::NoCursor);
+
+	// 싱글톤 객체 설정.
 	instance = this;
 
+	// 레벨 생성.
+	startLevel = new StartLevel();
+	gameLevel = new GameLevel();
 	menuLevel = new MenuLevel();
+	mainLevel = startLevel;
 }
 
 Game::~Game()
 {
-	if (showMenu)
-	{
-		delete backLevel;
-		backLevel = nullptr;
-		mainLevel = nullptr;
-	}
-	else
-	{
-		delete mainLevel;
-		mainLevel = nullptr;
-	}
-
+	mainLevel = nullptr;
+	delete startLevel;
+	delete gameLevel;
 	delete menuLevel;
-	menuLevel = nullptr;
 }
 
-void Game::ToggleMenu()
+Level* Game::LoadStartLevel()
 {
+	return startLevel;
+}
+
+void Game::ToggleLevel(const char* Text)
+{
+	// 화면 지우기.
 	system("cls");
-	//Clear();
-	showMenu = !showMenu;
-	if (showMenu)
+
+	if (Text == "Resume Game" || Text == "Start Game")
 	{
-		backLevel = mainLevel;
-		mainLevel = menuLevel;
+		mainLevel = gameLevel;
 	}
-	else
+	else if (Text == "Main")
 	{
-		mainLevel = backLevel;
+		mainLevel = startLevel;
+	}
+	else if ("Menu")
+	{
+		mainLevel = menuLevel;
 	}
 }

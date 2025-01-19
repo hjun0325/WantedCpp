@@ -6,18 +6,24 @@ class Game : public Engine
 {
 public:
 	Game();
-	~Game();
+	virtual ~Game();
 
-	void ToggleMenu();
+	// 시작 화면 불러오는 함수.
+	Level* LoadStartLevel();
 
+	// 레벨 전환 함수.
+	void ToggleLevel(const char* Text);
+
+	// 싱글톤 접근 함수.
 	static Game& Get() { return *instance; }
 
 private:
-	bool showMenu = false;
 
+	// 시작화면, 게임화면, 메뉴화면.
+	Level* startLevel = nullptr;
+	Level* gameLevel = nullptr;
 	Level* menuLevel = nullptr;
-	Level* backLevel = nullptr;
 
-private:
+	// 싱글톤 구현 객체.
 	static Game* instance;
 };

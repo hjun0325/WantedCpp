@@ -8,7 +8,7 @@
 Engine* Engine::instance = nullptr;
 
 Engine::Engine()
-	: quit(false), mainLevel(nullptr), screenSize(25, 25)
+	: quit(false), mainLevel(nullptr), screenSize(25, 25), mouseCoordinates(0, 0)
 {
 	// 랜덤 시드 설정.
 	srand((unsigned int)time(nullptr));
@@ -47,6 +47,9 @@ Engine::Engine()
 	char buffer[2048];
 	strcpy_s(buffer, 2048, emptyStringBuffer);
 #endif
+
+	SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),
+		ENABLE_PROCESSED_INPUT | ENABLE_MOUSE_INPUT);
 }
 
 Engine::~Engine()
@@ -97,7 +100,7 @@ void Engine::Run()
 		{
 			break;
 		}
-		
+
 		// 현재 프레임 시간 저장.
 		//time = timeGetTime();
 		QueryPerformanceCounter(&time);
@@ -215,6 +218,39 @@ void Engine::SetCursorPosition(int x, int y)
 	SetConsoleCursorPosition(handle, coord);
 }
 
+Vector2 Engine::MouseInputCoordinates()
+{
+	// 콘솔 창 핸들 얻기
+	HWND hwnd = GetConsoleWindow();
+
+	// 콘솔 창 위치와 크기를 담을 RECT 구조체
+	RECT rect;
+
+	// 콘솔 창의 위치와 크기 정보 가져오기
+	if (GetWindowRect(hwnd, &rect)) {
+		// 콘솔 창의 좌상단 위치 (x, y) 출력
+		int windowX = rect.left;
+		int windowY = rect.top;
+
+		std::cout << "콘솔 창 위치: (" << windowX << ", " << windowY << ")" << std::endl;
+	}
+	else {
+		std::cerr << "콘솔 창 위치 정보 가져오기 실패!" << std::endl;
+	}
+
+	POINT p;
+	if (GetCursorPos(&p))
+	{
+		int mouseX = p.x;
+		int mouseY = p.y;
+
+		mouseCoordinates.x = p.x;
+		mouseCoordinates.y = p.y;
+	}
+
+	return mouseCoordinates;
+}
+
 void Engine::SetTargetFrameRate(float targetFrameRate)
 {
 	this->targetFrameRate = targetFrameRate;
@@ -254,6 +290,8 @@ void Engine::ProcessInput()
 	{
 		keyState[ix].isKeyDown = (GetAsyncKeyState(ix) & 0x8000) ? true : false;
 	}
+
+	MouseInputCoordinates();
 }
 
 void Engine::Update(float deltaTime)
