@@ -1,4 +1,5 @@
 #include "Block.h"
+#include "Level/GameLevel.h"
 
 int Block::shapeCount = 0;
 
@@ -30,7 +31,7 @@ BlockType blockTypes[7] =
             { {0, 0, 0, 0}, {0, 2, 2, 0}, {0, 0, 2, 0}, {0, 0, 2, 0} }, // 180°
             { {0, 0, 0, 0}, {0, 0, 0, 2}, {0, 2, 2, 2}, {0, 0, 0, 0} }  // 270°
         },
-        Color::White, false
+        Color::Orange, false
     },
     { // O 블록
         {
@@ -70,8 +71,9 @@ BlockType blockTypes[7] =
     }
 };
 
-Block::Block()
-    :blockPosition(7, 1)
+Block::Block(const Vector2& position)
+    : blockPosition(position.x + 4, position.y)
+    //: blockPosition(4, 0)
 {
 	// 모양 결정 변수
 	int shapeIdx = 0;
@@ -102,13 +104,4 @@ Block::Block()
 
 Block::~Block()
 {
-}
-
-void Block::Update(float deltaTime)
-{
-}
-
-void Block::Draw()
-{
-
 }

@@ -12,11 +12,13 @@ enum class Color : unsigned short
 {
 	Blue = 1,
 	Green = 2,
-	Aqua=3,
+	Aqua = 3,
 	Red = 4,
 	Purple = 5,
 	Yellow = 6,
-	White = 7
+	White = 7,
+	Gray = 8,
+	Orange = 12
 };
 
 // 커서의 종류를 설정할 때 사용할 열거형.

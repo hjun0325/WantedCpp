@@ -6,7 +6,7 @@
 // Map Width (constexpr)
 const int MAP_WIDTH = 12;
 // Map Height (constexpr)
-const int MAP_HEIGHT = 22;
+const int MAP_HEIGHT = 23;
 
 // 블록 구조체 정의
 struct MapCell {
@@ -23,8 +23,8 @@ struct Map {
 	MapCell mapCells[MAP_HEIGHT][MAP_WIDTH]{};
 };
 
-class Block;
 class Player;
+class GhostBlock;
 class GameLevel : public Level
 {
 	RTTI_DECLARATIONS(GameLevel, Level)
@@ -42,6 +42,9 @@ public:
 	// 플레이어가 이동이 가능한 지 확인하는 함수.
 	bool CanPlayerMove(const Vector2& position);
 
+	// 하드 드랍에서 플레이어가 이동 가능한 곳까지 확인하는 함수.
+	int HardDropCanPlayerMove(const Vector2& position);
+
 	// 맵에 블럭 배치하는 함수.
 	void PlaceBlocksOnMap(const Vector2& position);
 
@@ -49,15 +52,36 @@ public:
 	void LineClear(const Vector2& position);
 
 	// 블록 회전 함수.
-	void RotateBlock();
+	void RotateBlock(int LR);
+
+	// 배치된 고스트 블럭 지우고 생성하는 함수.
+	void DeleteAndCreateGhostBlock();
+
+	// 맵 위치 반환 함수.
+	inline Vector2 MapPosition() const { return mapPosition; }
+
+	// 고스트 블럭 반환 함수.
+	inline GhostBlock* GetGonstBlock() const { return ghostBlock; }
+
+	// 고스트 블록 위치 변환 함수.
+	void SetGhostBlock(int V);
 
 private:
-	// 맵 생성
+	// 맵 위치.
+	Vector2 mapPosition;
+
+	// 맵.
 	Map map;
 
 	// 플레이어 액터.
 	Player* player = nullptr;
 
+	// 고스트 블럭 변수.
+	GhostBlock* ghostBlock = nullptr;
+
 	// 서브 블럭 액터.
 	//List<Block*> subBlock;
+
+	// 블록 하강 속도.
+	int autoBlockSpeed = 1;
 };

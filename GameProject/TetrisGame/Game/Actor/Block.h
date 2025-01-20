@@ -21,22 +21,24 @@ struct BlockType
     int rotateIdx = 0;
 };
 
+
 // 블록 초기화
-extern BlockType blockTypes[7];
+extern BlockType ghostBlockTypes[7];
 
 class GameLevel;
 class Block : public DrawableActor
 {
     RTTI_DECLARATIONS(Block, DrawableActor)
-        friend class GameLevel;
+        friend class GhostBlock;
+    friend class GameLevel;
     friend class Player;
 
 public:
-    Block();
+    Block(const Vector2& position);
     virtual ~Block();
 
-    virtual void Update(float deltaTime) override;
-    virtual void Draw() override;
+    // 블록 위치 반환 함수.
+    inline Vector2 BlockPosition() const { return blockPosition; }
 
 private:
     // 블록 타입 저장 변수.

@@ -3,6 +3,7 @@
 #include <Actor/DrawableActor.h>
 
 class Block;
+class GhostBlock;
 class GameLevel;
 class Player : public DrawableActor
 {
@@ -15,6 +16,11 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	// 배치된 블럭 지우고 생성하는 함수.
+	void DeleteAndCreateBlock();
+
+	// 고스트 블록 위치 갱신 함수.
+	void UpdateGhostBlockPosition();
 private:
 	// 조작할 블록 변수.
 	Block* mainBlock = nullptr;
