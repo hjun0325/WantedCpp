@@ -17,6 +17,12 @@ Player::~Player()
 		delete mainBlock;
 		mainBlock = nullptr;
 	}
+
+	if (holdBlock != nullptr)
+	{
+		delete holdBlock;
+		holdBlock = nullptr;
+	}
 }
 
 void Player::Update(float deltaTime)
@@ -26,7 +32,7 @@ void Player::Update(float deltaTime)
 	static float leftKeyTimer = 0.0f;   // 왼쪽 키 타이머
 	static float rightKeyTimer = 0.0f;  // 오른쪽 키 타이머
 	static float softDropTimer = 0.0f;  // 소프트 드랍 타이머
-	const float moveInterval = 0.3f;    // 0.3초마다 한 칸 이동
+	const float moveInterval = 0.2f;    // 0.2초마다 한 칸 이동
 	const float softDropInterval = 0.1f; // 소프트 드랍 속도 (0.1초마다 한 칸)
 
 	softDropTimer += deltaTime;
@@ -38,7 +44,7 @@ void Player::Update(float deltaTime)
 		if (refLevel->CanPlayerMove(Vector2(mainBlock->blockPosition.x - 1, mainBlock->blockPosition.y)))
 		{
 			mainBlock->blockPosition.x -= 1;
-			refLevel->SetGhostBlock(-1);
+			refLevel->SetGhostBlockPosition(-1);
 			UpdateGhostBlockPosition();
 		}
 	}
@@ -50,7 +56,7 @@ void Player::Update(float deltaTime)
 			if (refLevel->CanPlayerMove(Vector2(mainBlock->blockPosition.x - 1, mainBlock->blockPosition.y)))
 			{
 				mainBlock->blockPosition.x -= 1;
-				refLevel->SetGhostBlock(-1);
+				refLevel->SetGhostBlockPosition(-1);
 				UpdateGhostBlockPosition();
 			}
 		}
@@ -62,7 +68,7 @@ void Player::Update(float deltaTime)
 		if (refLevel->CanPlayerMove(Vector2(mainBlock->blockPosition.x + 1, mainBlock->blockPosition.y)))
 		{
 			mainBlock->blockPosition.x += 1;
-			refLevel->SetGhostBlock(1);
+			refLevel->SetGhostBlockPosition(1);
 			UpdateGhostBlockPosition();
 		}
 	}
@@ -74,7 +80,7 @@ void Player::Update(float deltaTime)
 			if (refLevel->CanPlayerMove(Vector2(mainBlock->blockPosition.x + 1, mainBlock->blockPosition.y)))
 			{
 				mainBlock->blockPosition.x += 1;
-				refLevel->SetGhostBlock(1);
+				refLevel->SetGhostBlockPosition(1);
 				UpdateGhostBlockPosition();
 			}
 		}
@@ -91,7 +97,7 @@ void Player::Update(float deltaTime)
 		else
 		{
 			// 맵에 현재 블록 배치.
-			refLevel->PlaceBlocksOnMap(Vector2(mainBlock->blockPosition.x, mainBlock->blockPosition.y));
+			refLevel->PlaceBlocksOnMap(Vector2(mainBlock->blockPosition));
 
 			DeleteAndCreateBlock();
 			refLevel->DeleteAndCreateGhostBlock();
@@ -108,7 +114,7 @@ void Player::Update(float deltaTime)
 		mainBlock->blockPosition.y += possibleN;
 
 		// 맵에 현재 블록 배치.
-		refLevel->PlaceBlocksOnMap(Vector2(mainBlock->blockPosition.x, mainBlock->blockPosition.y));
+		refLevel->PlaceBlocksOnMap(Vector2(mainBlock->blockPosition));
 
 		DeleteAndCreateBlock();
 		refLevel->DeleteAndCreateGhostBlock();
@@ -132,7 +138,42 @@ void Player::Update(float deltaTime)
 	// 잡기.
 	if (Engine::Get().GetKeyDown(VK_LSHIFT))
 	{
+		// 잡고 있는 블록이 없을 경우.
+		if (holdBlock == nullptr)
+		{
+			// 홀드 블럭에 저장.
+			holdBlock = mainBlock;
+			mainBlock = new Block(refLevel->MapPosition());
 
+			// 홀드 고스트 블럭에 저장.
+			refLevel->SetHoldGhostBlock(refLevel->GetGhostBlock());
+			refLevel->SetGhostBlock(new GhostBlock(mainBlock, refLevel));
+		}
+		// 잡고 있는 블록이 있을 경우.
+		else
+		{
+			// 홀드 블록과 메인 블록 변경.
+			Block* tempBlock = nullptr;
+			tempBlock = mainBlock;
+			mainBlock = holdBlock;
+			holdBlock = tempBlock;
+			tempBlock = nullptr;
+
+			// 홀드 고스트 블록과 메인 고스트 블록 변경.
+			GhostBlock* tempGhostBlock = nullptr;
+			tempGhostBlock = refLevel->GetGhostBlock();
+			refLevel->SetGhostBlock(refLevel->GetHoldGhostBlock());
+			refLevel->SetHoldGhostBlock(tempGhostBlock);
+			tempGhostBlock = nullptr;
+		}
+
+		// 홀드 블록은 회전 및 위치 기본 상태로 변경
+		holdBlock->blockType.rotateIdx = 0;
+		holdBlock->blockPosition = mainBlock->blockPosition;
+
+		// 고스트 홀드 블록 회전 및 위치 기본 상태로 변경.
+		refLevel->GhostBlockReset();
+		UpdateGhostBlockPosition();
 	}
 }
 
@@ -149,7 +190,7 @@ void Player::DeleteAndCreateBlock()
 
 void Player::UpdateGhostBlockPosition()
 {
-	refLevel->GetGonstBlock()->blockPosition.y = mainBlock->blockPosition.y;
-	int possibleN = refLevel->HardDropCanPlayerMove(refLevel->GetGonstBlock()->blockPosition);
-	refLevel->GetGonstBlock()->blockPosition.y += possibleN;
+	refLevel->GetGhostBlock()->blockPosition.y = mainBlock->blockPosition.y;
+	int possibleN = refLevel->HardDropCanPlayerMove(refLevel->GetGhostBlock()->blockPosition);
+	refLevel->GetGhostBlock()->blockPosition.y += possibleN;
 }

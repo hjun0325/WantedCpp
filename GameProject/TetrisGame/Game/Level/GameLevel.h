@@ -2,6 +2,7 @@
 
 #include <Level/Level.h>
 #include <Math/Vector2.h>
+#include <Engine/Timer.h>
 
 // Map Width (constexpr)
 const int MAP_WIDTH = 12;
@@ -60,11 +61,24 @@ public:
 	// 맵 위치 반환 함수.
 	inline Vector2 MapPosition() const { return mapPosition; }
 
-	// 고스트 블럭 반환 함수.
-	inline GhostBlock* GetGonstBlock() const { return ghostBlock; }
-
 	// 고스트 블록 위치 변환 함수.
-	void SetGhostBlock(int V);
+	void SetGhostBlockPosition(int V);
+
+	// 고스트 블럭 반환 함수.
+	inline GhostBlock* GetGhostBlock() const { return ghostBlock; }
+
+	// 고스트 블록 대입 함수.
+	inline void SetGhostBlock(GhostBlock* ghostBlock) { this->ghostBlock = ghostBlock; }
+
+	// 홀드한 블럭의 고스트 블럭 반환 함수.
+	inline GhostBlock* GetHoldGhostBlock() const { return holdGhostBlock; }
+	
+	// 홀드한 블럭의 고스트 블럭 대입 함수.
+	inline void SetHoldGhostBlock(GhostBlock* ghostBlock) { holdGhostBlock = ghostBlock; }
+
+	// 고스트 블록 홀드시 위치 및 회전 원상태 복구 함수.
+	 // 고스트 블록 위치 수정 함수.
+	void GhostBlockReset();
 
 private:
 	// 맵 위치.
@@ -79,9 +93,27 @@ private:
 	// 고스트 블럭 변수.
 	GhostBlock* ghostBlock = nullptr;
 
+	// 홀드한 블럭의 고스트 블록 변수.
+	GhostBlock* holdGhostBlock = nullptr;
+
 	// 서브 블럭 액터.
 	//List<Block*> subBlock;
 
 	// 블록 하강 속도.
 	int autoBlockSpeed = 1;
+
+	// 게임 오버.
+	bool gameOver = false;
+
+	// 게임 클리어.
+	bool gameClear = false;
+
+	// 라인 클리어 개수 카운트.
+	static int lineClearCount;
+
+	// 시간 측정 변수.
+	Timer timer;
+
+	// 현재 시간 변수.
+	float currentTime = 0.0f;
 };

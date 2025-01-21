@@ -1,29 +1,26 @@
-#include "StartLevel.h"
+#include "GameOverLevel.h"
 #include "Game/Game.h"
 
-StartLevel::StartLevel()
+GameOverLevel::GameOverLevel()
 {
 	// 메뉴 초기화.
-	items.emplace_back(new StartItem(
-		"New Game",
-		[]() {Game::Get().ToggleLevel("New Game");})
+	items.emplace_back(new GameOverItem(
+		"Retry",
+		[]() {Game::Get().ToggleLevel("Retry");})
 	);
-	items.emplace_back(new StartItem(
-		"Load Game",
-		[]() {Game::Get().ToggleLevel("Load Game");})
-	);
-	items.emplace_back(new StartItem(
-		"Quit Game",
-		[]() {Game::Get().QuitGame();})
+
+	items.emplace_back(new GameOverItem(
+		"Main",
+		[]() {Game::Get().ToggleLevel("Main");})
 	);
 
 	// 메뉴 개수 저장.
 	itemCount = (int)items.size();
 }
 
-StartLevel::~StartLevel()
+GameOverLevel::~GameOverLevel()
 {
-	for (StartItem* item : items)
+	for (GameOverItem* item : items)
 	{
 		delete item;
 	}
@@ -31,7 +28,7 @@ StartLevel::~StartLevel()
 	items.clear();
 }
 
-void StartLevel::Update(float deltaTime)
+void GameOverLevel::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
@@ -56,12 +53,12 @@ void StartLevel::Update(float deltaTime)
 	}
 }
 
-void StartLevel::Draw()
+void GameOverLevel::Draw()
 {
 	Super::Draw();
 
 	// 게임 제목 출력.
-	Engine::Get().Draw(Vector2(0, 0), "Tetris");
+	Engine::Get().Draw(Vector2(0, 0), "Game Over...");
 
 	// 루프 순회하면서 메뉴 텍스트 출력.
 	for (int ix = 0; ix < itemCount; ++ix)

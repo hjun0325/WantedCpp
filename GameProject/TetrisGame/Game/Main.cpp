@@ -7,6 +7,5 @@ int main()
 	CheckMemoryLeak();
 
 	Game game;
-	game.LoadLevel(game.LoadStartLevel());
 	game.Run();
 }

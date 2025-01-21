@@ -72,7 +72,7 @@ BlockType blockTypes[7] =
 };
 
 Block::Block(const Vector2& position)
-    : blockPosition(position.x + 4, position.y)
+    : blockPosition(position.x + 4, position.y-1)
     //: blockPosition(4, 0)
 {
 	// 모양 결정 변수

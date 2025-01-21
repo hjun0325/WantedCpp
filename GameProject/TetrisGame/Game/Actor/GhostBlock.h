@@ -30,9 +30,6 @@ public:
     GhostBlock(Block* block, GameLevel* level);
     virtual ~GhostBlock();
 
-    // 고스트 블록 위치 수정 함수.
-    void GhostBlockPosition();
-
 private:
     // 블록 타입 저장 변수.
     GhostBlockType ghostBlockType;

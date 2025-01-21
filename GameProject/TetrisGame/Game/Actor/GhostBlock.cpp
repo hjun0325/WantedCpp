@@ -34,8 +34,3 @@ GhostBlock::~GhostBlock()
 {
     
 }
-
-void GhostBlock::GhostBlockPosition()
-{
-    
-}
