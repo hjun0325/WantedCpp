@@ -143,7 +143,10 @@ void Player::Update(float deltaTime)
 		{
 			// 홀드 블럭에 저장.
 			holdBlock = mainBlock;
-			mainBlock = new Block(refLevel->MapPosition());
+			mainBlock = refLevel->TopDeque();
+			refLevel->PopToDeque();
+			refLevel->PushToDeque(new Block(refLevel->MapPosition()));
+			//mainBlock = new Block(refLevel->MapPosition());
 
 			// 홀드 고스트 블럭에 저장.
 			refLevel->SetHoldGhostBlock(refLevel->GetGhostBlock());
@@ -179,13 +182,18 @@ void Player::Update(float deltaTime)
 
 void Player::DeleteAndCreateBlock()
 {
-	// 메인 블록에서 빼고 맵에 배치.
+	// 맵의 배치가 된 블록 제거.
 	if (mainBlock != nullptr)
 	{
 		delete mainBlock;
 		mainBlock = nullptr;
 	}
-	mainBlock = new Block(refLevel->MapPosition());
+
+	// 메인 블록에 서브 블록에 최상단에 있는 블럭 대입.
+	mainBlock = refLevel->TopDeque();
+	refLevel->PopToDeque();
+	refLevel->PushToDeque(new Block(refLevel->MapPosition()));
+	//mainBlock = new Block(refLevel->MapPosition());
 }
 
 void Player::UpdateGhostBlockPosition()

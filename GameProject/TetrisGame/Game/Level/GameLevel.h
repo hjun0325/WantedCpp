@@ -1,5 +1,6 @@
 #pragma once
 
+#include <deque>
 #include <Level/Level.h>
 #include <Math/Vector2.h>
 #include <Engine/Timer.h>
@@ -25,6 +26,7 @@ struct Map {
 };
 
 class Player;
+class Block;
 class GhostBlock;
 class GameLevel : public Level
 {
@@ -80,6 +82,15 @@ public:
 	 // 고스트 블록 위치 수정 함수.
 	void GhostBlockReset();
 
+	// 큐에 값을 푸시하는 함수.
+	inline void PushToDeque(Block* block) { subBlock.push_back(block); }
+
+	// 큐에서 값을 팝하는 함수.
+	void PopToDeque();
+
+	// 큐에 front의 값을 반환하는 함수.
+	inline Block* TopDeque() { return subBlock.front(); }
+
 private:
 	// 맵 위치.
 	Vector2 mapPosition;
@@ -97,10 +108,10 @@ private:
 	GhostBlock* holdGhostBlock = nullptr;
 
 	// 서브 블럭 액터.
-	//List<Block*> subBlock;
+	std::deque<Block*> subBlock;
 
-	// 블록 하강 속도.
-	int autoBlockSpeed = 1;
+	// 서브 블럭 개수 (항상 5개여야함).
+	const int SubBlockCount = 5;
 
 	// 게임 오버.
 	bool gameOver = false;

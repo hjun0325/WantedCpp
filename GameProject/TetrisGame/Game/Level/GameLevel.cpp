@@ -47,13 +47,18 @@ GameLevel::GameLevel()
 	: mapPosition(Engine::Get().ScreenSize().x / 2 - MAP_WIDTH / 2, Engine::Get().ScreenSize().y / 2 - MAP_HEIGHT / 2)
 	//: mapPosition(0, 0)
 {
-	// 맵 초기화
+	// 맵 초기화.
 	InitializeMap(map);
-
 
 	// 플레이어 생성.
 	player = new Player(this);
 	AddActor(player);
+
+	// 서브 블럭 생성.
+	for (int ix = 0;ix < SubBlockCount;++ix)
+	{
+		subBlock.push_back(new Block(mapPosition));
+	}
 
 	// 고스트 블록 생성.
 	ghostBlock = new GhostBlock(player->mainBlock, this);
@@ -63,6 +68,21 @@ GameLevel::GameLevel()
 
 GameLevel::~GameLevel()
 {
+	// 서브 블럭 삭제.
+	for (int ix = 0;ix < SubBlockCount;++ix)
+	{
+		if (subBlock.front() != nullptr)
+		{
+			delete subBlock.front();
+			subBlock.front() = nullptr;
+		}
+
+		if (!subBlock.empty())
+		{
+			subBlock.pop_front();
+		}
+	}
+
 	if (ghostBlock != nullptr)
 	{
 		delete ghostBlock;
@@ -190,11 +210,34 @@ void GameLevel::Draw()
 			for (int jx = 0;jx < 4;++jx)
 			{
 				Engine::Get().Draw(
-					Vector2(mapPosition.x - 5 + jx, mapPosition.y + 3 + ix), player->holdBlock->blockType.rotations[player->holdBlock->blockType.rotateIdx][ix][jx] == 2 ? "0" : ""
+					Vector2(mapPosition.x - 5 + jx, mapPosition.y + 3 + ix),
+					player->holdBlock->blockType.rotations[player->holdBlock->blockType.rotateIdx][ix][jx] == 2 ? "0" : "",
+					player->holdBlock->blockType.color
 				);
 			}
 		}
 	}
+
+	// 다음 블록 5개 그리기.
+	Engine::Get().Draw(
+		Vector2(mapPosition.x + MAP_WIDTH + 1, mapPosition.y + 2), "NEXT"
+	);
+
+	for (int ix = 0;ix < SubBlockCount;++ix)
+	{
+		for (int jx = 0;jx < 4;++jx)
+		{
+			for (int kx = 0;kx < 4;++kx)
+			{
+				Engine::Get().Draw(
+					Vector2(mapPosition.x + MAP_WIDTH + 1 + kx, mapPosition.y + 3 + jx + (ix * 4)),
+					subBlock[ix]->blockType.rotations[subBlock[ix]->blockType.rotateIdx][jx][kx] == 2 ? "0" : "",
+					subBlock[ix]->blockType.color
+				);
+			}
+		}
+	}
+
 
 	// 라인 클리어 개수 표시.
 	Engine::Get().Draw(
@@ -394,4 +437,21 @@ void GameLevel::GhostBlockReset()
 {
 	ghostBlock->ghostBlockType.rotateIdx = 0;
 	ghostBlock->blockPosition = player->mainBlock->blockPosition;
+}
+
+void GameLevel::PopToDeque()
+{
+	// 여기서 지우면 메인 블록 객체 포인터가 가리키고 있는 값이 할당 해제 되므로 할당을 해제 하면 안된다.
+	/*if (subBlock.front() != nullptr)
+	{
+ 		delete subBlock.front();
+		subBlock.front() = nullptr;
+	}*/
+
+	subBlock.front() = nullptr;
+
+	if (!subBlock.empty())
+	{
+		subBlock.pop_front();
+	}
 }
