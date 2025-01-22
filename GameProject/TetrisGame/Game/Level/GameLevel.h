@@ -8,7 +8,7 @@
 // Map Width (constexpr)
 const int MAP_WIDTH = 12;
 // Map Height (constexpr)
-const int MAP_HEIGHT = 23;
+const int MAP_HEIGHT = 24;
 
 // 블록 구조체 정의
 struct MapCell {

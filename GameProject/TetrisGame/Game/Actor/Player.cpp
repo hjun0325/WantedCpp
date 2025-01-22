@@ -29,11 +29,13 @@ void Player::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
-	static float leftKeyTimer = 0.0f;   // 왼쪽 키 타이머
-	static float rightKeyTimer = 0.0f;  // 오른쪽 키 타이머
-	static float softDropTimer = 0.0f;  // 소프트 드랍 타이머
-	const float moveInterval = 0.2f;    // 0.2초마다 한 칸 이동
-	const float softDropInterval = 0.1f; // 소프트 드랍 속도 (0.1초마다 한 칸)
+	static float leftKeyTimer = 0.0f; // 왼쪽 키 타이머.
+	static float rightKeyTimer = 0.0f; // 오른쪽 키 타이머.
+	static float softDropTimer = 0.0f; // 소프트 드랍 타이머.
+	static float delayTimer = 0.0f; // 소프트 드랍시 배치하기 전에 움직일 시간을 주는 타이머.
+	const float moveInterval = 0.2f; // 0.2초마다 한 칸 이동.
+	const float softDropInterval = 0.1f; // 소프트 드랍 속도 (0.1초마다 한 칸).
+	const float delayInterval = 2.0f;
 
 	softDropTimer += deltaTime;
 
@@ -96,11 +98,19 @@ void Player::Update(float deltaTime)
 		// 더 이상 내려갈 수 있는 곳이 없는 경우.
 		else
 		{
-			// 맵에 현재 블록 배치.
-			refLevel->PlaceBlocksOnMap(Vector2(mainBlock->blockPosition));
+			// 내려갈 곳이 없을 때 
+			delayTimer += deltaTime;
+			if (delayTimer >= delayInterval)
+			{
+				// 맵에 현재 블록 배치.
+				refLevel->PlaceBlocksOnMap(Vector2(mainBlock->blockPosition));
 
-			DeleteAndCreateBlock();
-			refLevel->DeleteAndCreateGhostBlock();
+				DeleteAndCreateBlock();
+				refLevel->DeleteAndCreateGhostBlock();
+
+				// 딜레이 타이머 초기화.
+				delayTimer = 0.0f;
+			}
 		}
 
 		// 타이머 초기화

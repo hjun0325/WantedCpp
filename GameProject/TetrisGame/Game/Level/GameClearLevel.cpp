@@ -62,7 +62,7 @@ void GameClearLevel::Draw()
 
 	char timerBuffer[20];
 	record = record * 100 / 100;
-	snprintf(timerBuffer, 20, "Timer: %f", record);
+	snprintf(timerBuffer, 20, "Timer: %.1f", record);
 	// 기록 표시.
 	Engine::Get().Draw(Vector2(0, 2), timerBuffer);
 

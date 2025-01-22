@@ -34,6 +34,7 @@ void InitializeMap(Map& map) {
 		{1,0,0,0,0,0,0,0,0,0,0,1,},
 		{1,0,0,0,0,0,0,0,0,0,0,1,},
 		{1,1,1,1,1,1,1,1,1,1,1,1,},
+		{0,0,0,0,0,0,0,0,0,0,0,0,},
 	};
 
 	// 맵 초기화: 타입 설정.
@@ -63,7 +64,7 @@ GameLevel::GameLevel()
 	// 고스트 블록 생성.
 	ghostBlock = new GhostBlock(player->mainBlock, this);
 
-	timer.SetTime(0.01f);
+	timer.SetTime(0.1f);
 }
 
 GameLevel::~GameLevel()
@@ -103,7 +104,7 @@ void GameLevel::Update(float deltaTime)
 	timer.Update(deltaTime);
 	if (timer.IsTimeOut())
 	{
-		currentTime += 0.01f;
+		currentTime += 0.1f;
 		timer.Reset();
 	}
 	
@@ -115,7 +116,7 @@ void GameLevel::Update(float deltaTime)
 	// 게임 오버시 레벨 전환.
 	if (gameOver == true)
 	{
-		Game::Get().LoadLevel(Game::Get().GetGameOverLevel());
+ 		Game::Get().LoadLevel(Game::Get().GetGameOverLevel());
 	}
 
 	// 게임 클리어시 레벨 전환.
@@ -255,8 +256,8 @@ void GameLevel::Draw()
 	);
 
 	char timerBuffer[20];
-	currentTime = currentTime * 100 / 100;
-	snprintf(timerBuffer, 20, "Timer: %f", currentTime);
+	currentTime = currentTime * 10 / 10;
+	snprintf(timerBuffer, 20, "Timer: %.1f", currentTime);
 	Engine::Get().Draw(
 		Vector2(mapPosition.x - 16, mapPosition.y + 16), timerBuffer
 	);
