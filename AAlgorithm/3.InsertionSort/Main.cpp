@@ -29,6 +29,7 @@ void PrintArray(int* array, int length)
 	{
 		std::cout << array[ix] << (ix < length - 1 ? ", " : " ");
 	}
+
 	std::cout << "\n";
 }
 
