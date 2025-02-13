@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.Capsule", "1.Capsule\1.Ca
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.FireStation", "2.FireStation\2.FireStation.vcxproj", "{0C1E5334-BEE2-43E9-834F-1DB44D71E80B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3.DocumentProcessor", "3.DocumentProcessor\3.DocumentProcessor.vcxproj", "{F1581A15-B14E-4F15-AD91-DC14BBF734FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{0C1E5334-BEE2-43E9-834F-1DB44D71E80B}.Release|x64.Build.0 = Release|x64
 		{0C1E5334-BEE2-43E9-834F-1DB44D71E80B}.Release|x86.ActiveCfg = Release|Win32
 		{0C1E5334-BEE2-43E9-834F-1DB44D71E80B}.Release|x86.Build.0 = Release|Win32
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Debug|x64.ActiveCfg = Debug|x64
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Debug|x64.Build.0 = Debug|x64
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Debug|x86.ActiveCfg = Debug|Win32
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Debug|x86.Build.0 = Debug|Win32
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Release|x64.ActiveCfg = Release|x64
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Release|x64.Build.0 = Release|x64
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Release|x86.ActiveCfg = Release|Win32
+		{F1581A15-B14E-4F15-AD91-DC14BBF734FC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
