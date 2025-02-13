@@ -1,19 +1,16 @@
 #include <iostream>
 
 #include "Document.h"
+#include "DocumentProcess.h"
 #include "DocumentProcessor.h"
-
-#include "SpellcheckProcess.h"
-#include "RepaginateProcess.h"
-#include "TranslateIntoFrenchProcess.h"
 
 // 문서 처리자를 구성하는 함수.
 DocumentProcessor* Configure()
 {
     DocumentProcessor* processor = new DocumentProcessor();
-    processor->GetProcesses().emplace_back(new TranslateIntoFrenchProcess());
-    processor->GetProcesses().emplace_back(new SpellcheckProcess());
-    processor->GetProcesses().emplace_back(new RepaginateProcess());
+    processor->AddDocumentProcess(DocumentProcess::TranslateIntoFrench);
+    processor->AddDocumentProcess(DocumentProcess::SpellCheck);
+    processor->AddDocumentProcess(DocumentProcess::Repaginate);
 
     return processor;
 }
