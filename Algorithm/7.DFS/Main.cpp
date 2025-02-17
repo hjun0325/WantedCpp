@@ -144,7 +144,7 @@ bool ParseMap(const char* path)
 			fclose(file);
 			return false;
 		}
-
+		
 		// ¸Ê Å©±â ¼³Á¤.
 		sscanf_s(buffer, "size %d", &mapSize);
 
@@ -205,7 +205,7 @@ bool ParseMap2(const char* path)
 			fclose(file);
 			return false;
 		}
-
+		
 		// ¸Ê Å©±â ¼³Á¤.
 		sscanf_s(buffer, "size %d", &mapSize);
 
